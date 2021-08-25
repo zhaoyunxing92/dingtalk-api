@@ -20,7 +20,7 @@ public class DingTalkSecurityImplTest extends DingtalkApiApplicationTests {
     private DingTalkSecurity dingTalkSecurity;
 
     @Test
-    public void signature() throws Exception {ß
+    public void signature() throws Exception {
 
         String secret = "c9RMIAGoL_K26gxkw4LrLGf2ERSQVqMBd1K_jclUIT3WM249uVCwf0Ug2RpG4dBh";
         String ticket = "SEx31XX20YLqvcLVpnwObQHIbvv85ZD6UGXCphXEmp0zCNNfj6VMMklvZjVNDCf99rrKc476XMKS56d5p6iCOU";

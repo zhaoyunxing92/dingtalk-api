@@ -4,13 +4,11 @@ import org.apache.tomcat.util.codec.binary.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.security.MessageDigest;
 import java.util.Formatter;
 import java.util.Random;
 
@@ -116,5 +114,16 @@ public interface DingTalkSecurity {
      * @return 签名
      * @throws Exception ex
      */
-    String signature(String ticket, String nonce, long timeStamp, String url) throws Exception;
+    default String signature(String ticket, String nonce, long timeStamp, String url) throws Exception{
+        String plain = "jsapi_ticket=" + ticket + "&noncestr=" + nonce + "&timestamp=" + timeStamp
+                + "&url=" + decodeUrl(url);
+        try {
+            MessageDigest sha1 = MessageDigest.getInstance("SHA-256");
+            sha1.reset();
+            sha1.update(plain.getBytes(StandardCharsets.UTF_8));
+            return byteToHex(sha1.digest());
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
 }
