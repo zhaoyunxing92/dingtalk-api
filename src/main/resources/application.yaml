@@ -1,0 +1,14 @@
+dingtalk:
+  id: 1244553273
+  key: dingkjy4w80esdwgjuyo
+  secret: bDKa_nfJg3zYRsFrj-wTohTuoJCtxTEHaGmybYF9vgaVAZJOz-mICsLGStB288nW
+  ticket: SEx31XX20YLqvcLVpnwObQHIbvv85ZD6UGXCphXEmp0zCNNfj6VMMklvZjVNDCf99rrKc476XMKS56d5p6iCOU
+  isv: false
+  apis:
+    - runtime.info
+    - biz.contact.choose
+    - device.notification.confirm
+    - device.notification.alert
+    - device.notification.prompt
+    - biz.ding.post
+    - biz.util.openLink

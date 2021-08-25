@@ -1,0 +1,49 @@
+{
+  "groups": [
+    {
+      "name": "dingtalk",
+      "type": "com.github.dingtalk.api.domain.DingTalkConfig",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "dingtalk.apis",
+      "type": "java.util.List<java.lang.String>",
+      "description": "需要使用的jsapi列表，注意：不要带dd。",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    },
+    {
+      "name": "dingtalk.id",
+      "type": "java.lang.Long",
+      "description": "app id",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    },
+    {
+      "name": "dingtalk.isv",
+      "type": "java.lang.Boolean",
+      "description": "是否isv调用",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "dingtalk.key",
+      "type": "java.lang.String",
+      "description": "小程序key",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    },
+    {
+      "name": "dingtalk.secret",
+      "type": "java.lang.String",
+      "description": "小程序秘钥,如果是第三方企业",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    },
+    {
+      "name": "dingtalk.ticket",
+      "type": "java.lang.String",
+      "description": "钉钉推送的suiteTicket。",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    }
+  ],
+  "hints": []
+}
