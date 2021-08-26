@@ -88,7 +88,7 @@ public interface DingTalkSecurity {
      * @param timestamp   时间戳
      * @return 签名
      */
-    default String signature(String suitSecret, String suiteTicket, long timestamp) throws Exception{
+    default String signature(String suitSecret, String suiteTicket, long timestamp) throws Exception {
 
         String stringToSign = timestamp + "\n" + suiteTicket;
         Mac mac = Mac.getInstance("HmacSHA256");
@@ -114,11 +114,11 @@ public interface DingTalkSecurity {
      * @return 签名
      * @throws Exception ex
      */
-    default String signature(String ticket, String nonce, long timeStamp, String url) throws Exception{
-        String plain = "jsapi_ticket=" + ticket + "&noncestr=" + nonce + "&timestamp=" + timeStamp
-                + "&url=" + decodeUrl(url);
+    default String signature(String ticket, String nonce, long timeStamp, String url) throws Exception {
         try {
-            MessageDigest sha1 = MessageDigest.getInstance("SHA-256");
+            String plain = "jsapi_ticket=" + ticket + "&noncestr=" + nonce + "&timestamp=" + timeStamp
+                    + "&url=" + decodeUrl(url);
+            MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
             sha1.reset();
             sha1.update(plain.getBytes(StandardCharsets.UTF_8));
             return byteToHex(sha1.digest());

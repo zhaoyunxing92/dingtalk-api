@@ -2,6 +2,7 @@ package com.github.dingtalk.api.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.github.dingtalk.api.domain.*;
+import com.github.dingtalk.api.exception.ServiceException;
 import com.github.dingtalk.api.request.CorpTokenRequest;
 import com.github.dingtalk.api.service.DingTalkSecurity;
 import com.github.dingtalk.api.service.DingTalkService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -51,12 +53,10 @@ public class DingTalkServiceImpl implements DingTalkService {
                     .get()
                     .build();
 
-            String json = execute(request);
-            AccessToken accessToken = JSON.parseObject(json, AccessToken.class);
-            Assert.isTrue(accessToken.getCode().equals(0), accessToken.getMsg());
+            AccessToken accessToken = execute(request, AccessToken.class);
             return accessToken.getToken();
-        } catch (IOException e) {
-            log.error("get token err:", e);
+        } catch (IOException | ServiceException ex) {
+            log.error("get token err:", ex);
             return "";
         }
     }
@@ -98,12 +98,9 @@ public class DingTalkServiceImpl implements DingTalkService {
                     .post(body)
                     .build();
 
-            String json = execute(request);
-            AccessToken accessToken = JSON.parseObject(json, AccessToken.class);
-
-            Assert.isTrue(accessToken.getCode().equals(0), accessToken.getMsg());
+            AccessToken accessToken = execute(request, AccessToken.class);
             return accessToken.getToken();
-        } catch (Exception ex) {
+        } catch (Exception | ServiceException ex) {
             log.error("get corp token err:", ex);
             return "";
         }
@@ -129,13 +126,10 @@ public class DingTalkServiceImpl implements DingTalkService {
                     .get()
                     .build();
 
-            String json = execute(request);
-            Ticket ticket = JSON.parseObject(json, Ticket.class);
-
-            Assert.isTrue(ticket.getCode().equals(0), ticket.getMsg());
+            Ticket ticket = execute(request, Ticket.class);
             return ticket.getTicket();
-        } catch (IOException e) {
-            log.error("get ticket token err:", e);
+        } catch (IOException | ServiceException ex) {
+            log.error("get ticket token err:", ex);
             return "";
         }
     }
@@ -158,8 +152,9 @@ public class DingTalkServiceImpl implements DingTalkService {
             }
 
             String ticket = getTicketToken(token);
-            String nonce = dingTalkSecurity.getRandomStr(6);
-            long timestamp = System.currentTimeMillis();
+            String nonce = dingTalkSecurity.getRandomStr(32);
+            long timestamp = Instant.now().getEpochSecond();
+
             String signature = dingTalkSecurity.signature(ticket, nonce, timestamp, url);
 
             return ApiResponse.success(new DDConfig()

@@ -1,15 +1,18 @@
 package com.github.dingtalk.api.service;
 
-import com.github.dingtalk.api.domain.ApiResponse;
-import com.github.dingtalk.api.domain.DDConfig;
-import com.github.dingtalk.api.domain.DingTalkConfig;
+import com.alibaba.fastjson.JSON;
+import com.github.dingtalk.api.domain.*;
+import com.github.dingtalk.api.exception.ServiceException;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.util.Assert;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -53,10 +56,19 @@ public interface DingTalkService {
      * @return json 数据体
      * @throws IOException ex
      */
-    default String execute(Request req) throws IOException {
+    default <T extends DingTalkResponse> T execute(Request req, Class<T> clazz) throws ServiceException, IOException {
         Response res = client.newCall(req).execute();
-        assert res.body() != null;
-        return res.body().string();
+
+        if (Objects.isNull(res.body())) {
+            throw new ServiceException(ApiResponse.fail("响应体为空"));
+        }
+
+        String json = res.body().string();
+        T ding = JSON.parseObject(json, clazz);
+        if (!ding.getCode().equals(0)) {
+            throw new ServiceException(ApiResponse.fail(ding.getCode(), ding.getMsg()));
+        }
+        return ding;
     }
 
     /**

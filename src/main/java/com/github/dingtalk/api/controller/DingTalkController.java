@@ -4,9 +4,9 @@ import com.github.dingtalk.api.domain.ApiResponse;
 import com.github.dingtalk.api.domain.DDConfig;
 import com.github.dingtalk.api.service.DingTalkService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 钉钉控制器
@@ -21,9 +21,18 @@ public class DingTalkController {
 
     private final DingTalkService dingTalkService;
 
-    @GetMapping("/config")
-    public ApiResponse<DDConfig> getDingTalkConfig(String corpId) {
+    /**
+     * 获取dd config
+     *
+     * @param corpId 企业id
+     * @return config
+     */
+    @GetMapping("/dd/config/{corpId}")
+    public ApiResponse<DDConfig> getDingTalkConfig(HttpServletRequest request,
+                                                   @PathVariable(name = "corpId") String corpId) {
 
-        return dingTalkService.generateDingTalkConfig("",corpId);
+        String url = request.getRequestURL().toString();
+
+        return dingTalkService.generateDingTalkConfig(url, corpId);
     }
 }

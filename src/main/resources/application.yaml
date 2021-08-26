@@ -1,8 +1,7 @@
 dingtalk:
-  id: 1244553273
-  key: dingkjy4w80esdwgjuyo
-  secret: bDKa_nfJg3zYRsFrj-wTohTuoJCtxTEHaGmybYF9vgaVAZJOz-mICsLGStB288nW
-  ticket: SEx31XX20YLqvcLVpnwObQHIbvv85ZD6UGXCphXEmp0zCNNfj6VMMklvZjVNDCf99rrKc476XMKS56d5p6iCOU
+  id: 1279842668
+  key: dingsoxqy0cobtzqmxud
+  secret: rqKkOr54z2iwVnV8Y0tT1TYua0hPEX78PdytG-cP6JKj7m-V3A3zKt8xQZt3B5Oy
   isv: false
   apis:
     - runtime.info

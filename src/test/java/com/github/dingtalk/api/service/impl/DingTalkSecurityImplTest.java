@@ -6,6 +6,7 @@ import com.github.dingtalk.api.service.DingTalkSecurity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 /**
  * 至少说点啥吧
@@ -26,6 +27,6 @@ public class DingTalkSecurityImplTest extends DingtalkApiApplicationTests {
         String ticket = "SEx31XX20YLqvcLVpnwObQHIbvv85ZD6UGXCphXEmp0zCNNfj6VMMklvZjVNDCf99rrKc476XMKS56d5p6iCOU";
         String signature = dingTalkSecurity.signature(secret, ticket, 1629879099342L);
 
-        log.info("signature={}", signature);
+        Assert.isTrue(signature.equals("auGsFduirwTx3fYqswR8SCuaKbHpHjJzUB%2FcIAWHGuw%3D"), "签名计算错误");
     }
 }

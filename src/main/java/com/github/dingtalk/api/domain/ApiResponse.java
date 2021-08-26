@@ -55,9 +55,17 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> fail(String msg) {
         ApiResponse<T> res = new ApiResponse<T>();
-        res.setSucceed(false);
-        res.setCode(500);
+        res.setCode(-1);
         res.setMsg(msg);
+        res.setSucceed(false);
+        return res;
+    }
+
+    public static <T> ApiResponse<T> fail(Integer code, String msg) {
+        ApiResponse<T> res = new ApiResponse<T>();
+        res.setMsg(msg);
+        res.setCode(code);
+        res.setSucceed(false);
         return res;
     }
 }
