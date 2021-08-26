@@ -2,16 +2,17 @@ package com.github.dingtalk.api.service;
 
 import com.alibaba.fastjson.JSON;
 import com.github.dingtalk.api.domain.*;
+import com.github.dingtalk.api.domain.dingtalk.DingTalkResponse;
+import com.github.dingtalk.api.domain.dingtalk.UserDetail;
+import com.github.dingtalk.api.domain.dingtalk.UserInfo;
 import com.github.dingtalk.api.exception.ServiceException;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.springframework.util.Assert;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +42,16 @@ public interface DingTalkService {
     String getTicketToken = api + "/get_jsapi_ticket";
 
     /**
+     * 用户信息
+     */
+    String getUserInfo = api + "/user/getuserinfo";
+
+    /**
+     * 用户详情
+     */
+    String getUserDetail = api + "/user/get";
+
+    /**
      * okhttp client
      */
     OkHttpClient client = new OkHttpClient.Builder()
@@ -48,6 +59,20 @@ public interface DingTalkService {
             .cache(new Cache(new File(System.getProperty("user.dir"), ".cache"),
                     10 * 1024 * 1024))
             .build();
+
+    /**
+     * 获取token
+     *
+     * @param corpId 企业id
+     * @param isv    是否isv
+     * @return token
+     */
+    default String getAccessToken(String corpId, boolean isv) {
+        if (isv) {
+            return getCorpToken(corpId);
+        }
+        return getToken();
+    }
 
     /**
      * 发送请求
@@ -94,10 +119,10 @@ public interface DingTalkService {
      * 获取jsapi_ticket
      * <a href="https://developers.dingtalk.com/document/app/obtain-jsapi_ticket">获取jsapi_ticket</a>
      *
-     * @param token 企业的token
+     * @param corpId 企业的id
      * @return jsapi token
      */
-    String getTicketToken(String token);
+    String getTicketToken(String corpId);
 
     /**
      * 获取钉钉dd.config
@@ -107,4 +132,31 @@ public interface DingTalkService {
      * @return DDConfig
      */
     ApiResponse<DDConfig> generateDingTalkConfig(String url, String corpId);
+
+    /**
+     * 根据临时授权码获取用户信息
+     *
+     * @param corpId 企业id
+     * @param code   临时授权码
+     * @return 用户信息
+     */
+    ApiResponse<UserDetail> getDingTalkUserInfoByCode(String corpId, String code);
+
+    /**
+     * 获取用户信息
+     *
+     * @param corpId 企业id
+     * @param code   临时授权码
+     * @return 用户信息
+     */
+    UserInfo getUserInfo(String corpId, String code);
+
+    /**
+     * 获取用户详情
+     *
+     * @param corpId 企业id
+     * @param userId 用户di
+     * @return 用户详情
+     */
+    UserDetail getUserDetail(String corpId, String userId);
 }

@@ -2,6 +2,10 @@ package com.github.dingtalk.api.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.github.dingtalk.api.domain.*;
+import com.github.dingtalk.api.domain.dingtalk.AccessToken;
+import com.github.dingtalk.api.domain.dingtalk.Ticket;
+import com.github.dingtalk.api.domain.dingtalk.UserDetail;
+import com.github.dingtalk.api.domain.dingtalk.UserInfo;
 import com.github.dingtalk.api.exception.ServiceException;
 import com.github.dingtalk.api.request.CorpTokenRequest;
 import com.github.dingtalk.api.service.DingTalkSecurity;
@@ -48,7 +52,7 @@ public class DingTalkServiceImpl implements DingTalkService {
             url.addEncodedQueryParameter("appkey", dingTalkConfig.getKey());
             url.addEncodedQueryParameter("appsecret", dingTalkConfig.getSecret());
             Request request = new Request.Builder()
-                    .cacheControl(new CacheControl.Builder().maxAge(7200, TimeUnit.SECONDS).build())
+                    .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
                     .url(url.build())
                     .get()
                     .build();
@@ -93,7 +97,7 @@ public class DingTalkServiceImpl implements DingTalkService {
             RequestBody body = RequestBody.create(jsonMediaType, JSON.toJSONString(args));
 
             Request request = new Request.Builder()
-                    .cacheControl(new CacheControl.Builder().maxAge(7200, TimeUnit.SECONDS).build())
+                    .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
                     .url(url.build())
                     .post(body)
                     .build();
@@ -110,18 +114,19 @@ public class DingTalkServiceImpl implements DingTalkService {
      * 获取jsapi_ticket
      * <a href="https://developers.dingtalk.com/document/app/obtain-jsapi_ticket">获取jsapi_ticket</a>
      *
-     * @param token 企业的token
+     * @param corpId 企业的token
      * @return jsapi token
      */
     @Override
-    public String getTicketToken(String token) {
+    public String getTicketToken(String corpId) {
         try {
-            Assert.hasLength(token, "token不能为空");
+            String token = getAccessToken(corpId, dingTalkConfig.isIsv());
+
             HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getTicketToken)).newBuilder();
             url.addEncodedQueryParameter("access_token", token);
 
             Request request = new Request.Builder()
-                    .cacheControl(new CacheControl.Builder().maxAge(7200, TimeUnit.SECONDS).build())
+                    .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
                     .url(url.build())
                     .get()
                     .build();
@@ -144,15 +149,9 @@ public class DingTalkServiceImpl implements DingTalkService {
     @Override
     public ApiResponse<DDConfig> generateDingTalkConfig(String url, String corpId) {
         try {
-            String token;
-            if (dingTalkConfig.isIsv()) {
-                token = getCorpToken(corpId);
-            } else {
-                token = getToken();
-            }
 
-            String ticket = getTicketToken(token);
-            String nonce = dingTalkSecurity.getRandomStr(32);
+            String ticket = getTicketToken(corpId);
+            String nonce = dingTalkSecurity.getRandomStr(8);
             long timestamp = Instant.now().getEpochSecond();
 
             String signature = dingTalkSecurity.signature(ticket, nonce, timestamp, url);
@@ -168,5 +167,73 @@ public class DingTalkServiceImpl implements DingTalkService {
         } catch (Exception ex) {
             return ApiResponse.fail(ex.getMessage());
         }
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param corpId 企业id
+     * @param code   临时授权码
+     * @return 用户信息
+     */
+    @Override
+    public UserInfo getUserInfo(String corpId, String code) {
+        try {
+            String token = getAccessToken(corpId, dingTalkConfig.isIsv());
+            HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getUserInfo)).newBuilder();
+            url.addEncodedQueryParameter("access_token", token);
+            url.addEncodedQueryParameter("code", code);
+
+            Request request = new Request.Builder()
+                    .url(url.build())
+                    .get()
+                    .build();
+
+            return execute(request, UserInfo.class);
+        } catch (IOException | ServiceException ex) {
+            log.error("get ticket token err:", ex);
+            return null;
+        }
+    }
+
+    /**
+     * 获取用户详情
+     *
+     * @param corpId 企业id
+     * @param userId 用户di
+     * @return 用户详情
+     */
+    @Override
+    public UserDetail getUserDetail(String corpId, String userId) {
+        try {
+            String token = getAccessToken(corpId, dingTalkConfig.isIsv());
+
+            HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getUserDetail)).newBuilder();
+            url.addEncodedQueryParameter("access_token", token);
+            url.addEncodedQueryParameter("userid", userId);
+
+            Request request = new Request.Builder()
+                    .url(url.build())
+                    .get()
+                    .build();
+
+            return execute(request, UserDetail.class);
+        } catch (IOException | ServiceException ex) {
+            log.error("get user detail  err:", ex);
+            return null;
+        }
+    }
+
+    /**
+     * 根据临时授权码获取用户信息
+     *
+     * @param corpId 企业id
+     * @param code   临时授权码
+     * @return 用户信息
+     */
+    @Override
+    public ApiResponse<UserDetail> getDingTalkUserInfoByCode(String corpId, String code) {
+        UserInfo userInfo = getUserInfo(corpId, code);
+        return ApiResponse.success(getUserDetail(corpId, userInfo.getUserId()));
     }
 }

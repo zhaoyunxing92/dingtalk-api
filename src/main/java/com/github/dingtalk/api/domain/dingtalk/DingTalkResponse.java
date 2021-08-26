@@ -1,4 +1,4 @@
-package com.github.dingtalk.api.domain;
+package com.github.dingtalk.api.domain.dingtalk;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
