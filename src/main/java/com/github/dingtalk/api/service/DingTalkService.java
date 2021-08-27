@@ -55,7 +55,9 @@ public interface DingTalkService {
      * okhttp client
      */
     OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
             .cache(new Cache(new File(System.getProperty("user.dir"), ".cache"),
                     10 * 1024 * 1024))
             .build();

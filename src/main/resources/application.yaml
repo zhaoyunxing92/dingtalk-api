@@ -1,7 +1,7 @@
 dingtalk:
-  id: 1279842668
-  key: dingsoxqy0cobtzqmxud
-  secret: rqKkOr54z2iwVnV8Y0tT1TYua0hPEX78PdytG-cP6JKj7m-V3A3zKt8xQZt3B5Oy
+  id: 1279813775
+  key: dinggcd3ej0tk8qgktoq
+  secret: 1kwSXdjyg3Alrh7lWNzYAHTX5Np8eRyqezvobeT9faFeOdyPoNqXWb3sxd3gPTPz
   isv: false
   apis:
     - runtime.info

@@ -11,6 +11,7 @@ import com.github.dingtalk.api.request.CorpTokenRequest;
 import com.github.dingtalk.api.service.DingTalkSecurity;
 import com.github.dingtalk.api.service.DingTalkService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.stereotype.Service;
@@ -45,24 +46,20 @@ public class DingTalkServiceImpl implements DingTalkService {
      *
      * @return token
      */
+    @SneakyThrows
     @Override
     public String getToken() {
-        try {
-            HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getToken)).newBuilder();
-            url.addEncodedQueryParameter("appkey", dingTalkConfig.getKey());
-            url.addEncodedQueryParameter("appsecret", dingTalkConfig.getSecret());
-            Request request = new Request.Builder()
-                    .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
-                    .url(url.build())
-                    .get()
-                    .build();
 
-            AccessToken accessToken = execute(request, AccessToken.class);
-            return accessToken.getToken();
-        } catch (IOException | ServiceException ex) {
-            log.error("get token err:", ex);
-            return "";
-        }
+        HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getToken)).newBuilder();
+        url.addEncodedQueryParameter("appkey", dingTalkConfig.getKey());
+        url.addEncodedQueryParameter("appsecret", dingTalkConfig.getSecret());
+        Request request = new Request.Builder()
+                .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
+                .url(url.build())
+                .get()
+                .build();
+
+        return execute(request, AccessToken.class).getToken();
     }
 
     /**
@@ -74,40 +71,35 @@ public class DingTalkServiceImpl implements DingTalkService {
      * @return token
      */
     @Override
+    @SneakyThrows
     public String getCorpToken(String corpId) {
-        try {
 
-            Assert.hasLength(corpId, "corpId不能为空");
+        Assert.hasLength(corpId, "corpId不能为空");
 
-            long timestamp = System.currentTimeMillis();
+        long timestamp = System.currentTimeMillis();
 
-            String ticket = dingTalkConfig.getTicket();
-            String secret = dingTalkConfig.getSecret();
+        String ticket = dingTalkConfig.getTicket();
+        String secret = dingTalkConfig.getSecret();
 
-            String signature = dingTalkSecurity.signature(secret, ticket, timestamp);
+        String signature = dingTalkSecurity.signature(secret, ticket, timestamp);
 
-            HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getCorpToken)).newBuilder();
-            url.addEncodedQueryParameter("accessKey", dingTalkConfig.getKey());
-            url.addEncodedQueryParameter("timestamp", String.valueOf(timestamp));
-            url.addEncodedQueryParameter("suiteTicket", ticket);
-            url.addEncodedQueryParameter("signature", signature);
+        HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getCorpToken)).newBuilder();
+        url.addEncodedQueryParameter("accessKey", dingTalkConfig.getKey());
+        url.addEncodedQueryParameter("timestamp", String.valueOf(timestamp));
+        url.addEncodedQueryParameter("suiteTicket", ticket);
+        url.addEncodedQueryParameter("signature", signature);
 
-            CorpTokenRequest args = new CorpTokenRequest(corpId);
+        CorpTokenRequest args = new CorpTokenRequest(corpId);
 
-            RequestBody body = RequestBody.create(jsonMediaType, JSON.toJSONString(args));
+        RequestBody body = RequestBody.create(jsonMediaType, JSON.toJSONString(args));
 
-            Request request = new Request.Builder()
-                    .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
-                    .url(url.build())
-                    .post(body)
-                    .build();
+        Request request = new Request.Builder()
+                .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
+                .url(url.build())
+                .post(body)
+                .build();
 
-            AccessToken accessToken = execute(request, AccessToken.class);
-            return accessToken.getToken();
-        } catch (Exception | ServiceException ex) {
-            log.error("get corp token err:", ex);
-            return "";
-        }
+        return execute(request, AccessToken.class).getToken();
     }
 
     /**
@@ -118,25 +110,21 @@ public class DingTalkServiceImpl implements DingTalkService {
      * @return jsapi token
      */
     @Override
+    @SneakyThrows
     public String getTicketToken(String corpId) {
-        try {
-            String token = getAccessToken(corpId, dingTalkConfig.isIsv());
 
-            HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getTicketToken)).newBuilder();
-            url.addEncodedQueryParameter("access_token", token);
+        String token = getAccessToken(corpId, dingTalkConfig.isIsv());
 
-            Request request = new Request.Builder()
-                    .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
-                    .url(url.build())
-                    .get()
-                    .build();
+        HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getTicketToken)).newBuilder();
+        url.addEncodedQueryParameter("access_token", token);
 
-            Ticket ticket = execute(request, Ticket.class);
-            return ticket.getTicket();
-        } catch (IOException | ServiceException ex) {
-            log.error("get ticket token err:", ex);
-            return "";
-        }
+        Request request = new Request.Builder()
+                .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
+                .url(url.build())
+                .get()
+                .build();
+
+        return execute(request, Ticket.class).getTicket();
     }
 
     /**
@@ -170,30 +158,29 @@ public class DingTalkServiceImpl implements DingTalkService {
     }
 
     /**
-     * 获取用户信息
+     * 通过免登码获取用户信息
+     *
+     * <a href="https://developers.dingtalk.com/document/app/get-user-userid-through-login-free-code?spm=ding_open_doc.document.0.0.6f6547e5lYFgNi#topic-1936806">通过免登码获取用户信息</a>
      *
      * @param corpId 企业id
      * @param code   临时授权码
      * @return 用户信息
      */
     @Override
+    @SneakyThrows
     public UserInfo getUserInfo(String corpId, String code) {
-        try {
-            String token = getAccessToken(corpId, dingTalkConfig.isIsv());
-            HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getUserInfo)).newBuilder();
-            url.addEncodedQueryParameter("access_token", token);
-            url.addEncodedQueryParameter("code", code);
 
-            Request request = new Request.Builder()
-                    .url(url.build())
-                    .get()
-                    .build();
+        String token = getAccessToken(corpId, dingTalkConfig.isIsv());
+        HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getUserInfo)).newBuilder();
+        url.addEncodedQueryParameter("access_token", token);
+        url.addEncodedQueryParameter("code", code);
 
-            return execute(request, UserInfo.class);
-        } catch (IOException | ServiceException ex) {
-            log.error("get ticket token err:", ex);
-            return null;
-        }
+        Request request = new Request.Builder()
+                .url(url.build())
+                .get()
+                .build();
+
+        return execute(request, UserInfo.class);
     }
 
     /**
@@ -204,24 +191,21 @@ public class DingTalkServiceImpl implements DingTalkService {
      * @return 用户详情
      */
     @Override
+    @SneakyThrows
     public UserDetail getUserDetail(String corpId, String userId) {
-        try {
-            String token = getAccessToken(corpId, dingTalkConfig.isIsv());
 
-            HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getUserDetail)).newBuilder();
-            url.addEncodedQueryParameter("access_token", token);
-            url.addEncodedQueryParameter("userid", userId);
+        String token = getAccessToken(corpId, dingTalkConfig.isIsv());
 
-            Request request = new Request.Builder()
-                    .url(url.build())
-                    .get()
-                    .build();
+        HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getUserDetail)).newBuilder();
+        url.addEncodedQueryParameter("access_token", token);
+        url.addEncodedQueryParameter("userid", userId);
 
-            return execute(request, UserDetail.class);
-        } catch (IOException | ServiceException ex) {
-            log.error("get user detail  err:", ex);
-            return null;
-        }
+        Request request = new Request.Builder()
+                .url(url.build())
+                .get()
+                .build();
+
+        return execute(request, UserDetail.class);
     }
 
     /**

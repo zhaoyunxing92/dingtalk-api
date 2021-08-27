@@ -18,7 +18,7 @@ public class UserInfo extends DingTalkResponse {
     /**
      * 员工在当前企业内的唯一标识，也称staffId。
      */
-    @JSONField(name = "unionid")
+    @JSONField(name = "userid")
     private String userId;
 
     /**
@@ -54,6 +54,4 @@ public class UserInfo extends DingTalkResponse {
      */
     @JSONField(name = "sys_level")
     private Integer level;
-
-
 }
