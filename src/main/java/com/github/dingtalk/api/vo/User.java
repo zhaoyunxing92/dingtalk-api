@@ -44,4 +44,5 @@ public class User {
      * 企业信息
      */
     private CorpInfo corpInfo;
+
 }
