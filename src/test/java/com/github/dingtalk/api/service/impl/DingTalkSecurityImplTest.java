@@ -43,9 +43,29 @@ public class DingTalkSecurityImplTest extends DingtalkApiApplicationTests {
         Assert.isTrue(signature.equals("d14dfc1d0d98cad2438e664723e8a9d8633b443f"), "签名计算错误");
     }
 
+    /**
+     * 消息解密 https://developers.dingtalk.com/document/app/configure-event-subcription
+     * <p>
+     * toke:123456
+     * ase: 1234567890123456789012345678901234567890123
+     * appkey: dingsnotzck6pm5veliw
+     * signature: 9a95a004dd16f5c307e849b994173f76aa26e5eb
+     * timestamp: 1614767836
+     * nonce: A7Co0cJLMzIDtMMI
+     * encrypt: YvkvaGe4hQxd3VxRmEty0dVlnCOAqwf56xwTRHDHoOURqhalbmBJQk5FNcRk42Gl5T0YQXZNwpwWSm1xAFJ5ZA==
+     * 解密出 success
+     *
+     * @return str
+     */
     @Test
     public void testDecrypt() {
-        String text = dingTalkSecurity.decrypt("YvkvaGe4hQxd3VxRmEty0dVlnCOAqwf56xwTRHDHoOURqhalbmBJQk5FNcRk42Gl5T0YQXZNwpwWSm1xAFJ5ZA==");
+
+        String encrypt = dingTalkSecurity.encrypt("A7Co0cJLMzIDtMMI","success");
+
+        String text = dingTalkSecurity.decryptMessage("9a95a004dd16f5c307e849b994173f76aa26e5eb", "1614767836", "A7Co0cJLMzIDtMMI", "YvkvaGe4hQxd3VxRmEty0dVlnCOAqwf56xwTRHDHoOURqhalbmBJQk5FNcRk42Gl5T0YQXZNwpwWSm1xAFJ5ZA==");
+
+        log.info("encrypt={}，eq：{}", encrypt,encrypt.equals("YvkvaGe4hQxd3VxRmEty0dVlnCOAqwf56xwTRHDHoOURqhalbmBJQk5FNcRk42Gl5T0YQXZNwpwWSm1xAFJ5ZA=="));
+        log.info("text={},eq:{}", text,text.equals("success"));
     }
 
 }

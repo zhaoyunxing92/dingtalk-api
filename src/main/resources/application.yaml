@@ -1,6 +1,6 @@
 dingtalk:
-  id: 10435002
-  key: dinggcd3ej0tk8qgktoq
+  id: 1279813775
+  key: dingsnotzck6pm5veliw
   corpId: dingc7c5220402493357f2c783f7214b6d69
   secret: 1kwSXdjyg3Alrh7lWNzYAHTX5Np8eRyqezvobeT9faFeOdyPoNqXWb3sxd3gPTPz
   corpSecret: 39dtrDv5hqnRc9k6Qb49NFypuAqinCRfyS0YiyHKzdEmRKCeoo_ASpwsvjN47mrp
@@ -13,5 +13,5 @@ dingtalk:
     - device.notification.prompt
     - biz.ding.post
     - biz.util.openLink
-  token: test
-  aes: mc11mxmfv4mikgvu6wmc8e6e06g51g3kbh7gshshmyf
+  token: 123456
+  aes: 1234567890123456789012345678901234567890123

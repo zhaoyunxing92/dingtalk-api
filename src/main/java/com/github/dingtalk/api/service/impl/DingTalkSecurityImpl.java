@@ -34,6 +34,7 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
 
     private final DingTalkConfig dingTalkConfig;
 
+    private static final Base64 base64 = new Base64();
     /**
      * 获取事件回调签名
      *
@@ -69,8 +70,16 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
     }
 
     /**
-     * 消息解密
+     * 消息解密 https://developers.dingtalk.com/document/app/configure-event-subcription
      *
+     * toke:123456
+     * ase: 1234567890123456789012345678901234567890123
+     * appkey: dingsnotzck6pm5veliw
+     * signature: 9a95a004dd16f5c307e849b994173f76aa26e5eb
+     * timestamp: 1614767836
+     * nonce: A7Co0cJLMzIDtMMI
+     * encrypt: YvkvaGe4hQxd3VxRmEty0dVlnCOAqwf56xwTRHDHoOURqhalbmBJQk5FNcRk42Gl5T0YQXZNwpwWSm1xAFJ5ZA==
+     *  解密出 success
      * @param text 加密字符串
      * @return str
      */
@@ -121,12 +130,12 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
             byte[] randomBytes = random.getBytes(StandardCharsets.UTF_8);
             byte[] plainTextBytes = plaintext.getBytes(StandardCharsets.UTF_8);
             byte[] lengthByte = int2Bytes(plainTextBytes.length);
-            byte[] corpIdBytes = dingTalkConfig.getCorpId().getBytes(StandardCharsets.UTF_8);
+            byte[] corpIdBytes = dingTalkConfig.getKey().getBytes(StandardCharsets.UTF_8);
 
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             byteStream.write(randomBytes);
-            byteStream.write(lengthByte);
             byteStream.write(plainTextBytes);
+            byteStream.write(lengthByte);
             byteStream.write(corpIdBytes);
             byte[] padBytes = PKCS7Padding.getPaddingBytes(byteStream.size());
 
@@ -142,7 +151,7 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
             IvParameterSpec iv = new IvParameterSpec(aes, 0, 16);
             cipher.init(1, keySpec, iv);
             byte[] encrypted = cipher.doFinal(unencrypted);
-            return new Base64().encodeToString(encrypted);
+            return base64.encodeToString(encrypted);
         } catch (Exception var15) {
             throw new ServiceException("钉钉消息加密异常");
         }

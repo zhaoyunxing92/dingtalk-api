@@ -14,9 +14,10 @@
     <name>dingtalk-api</name>
     <description>dingtalk-api</description>
     <properties>
+        <skipTests>true</skipTests>
         <java.version>1.8</java.version>
         <fastjson.version>1.2.78</fastjson.version>
-        <skipTests>true</skipTests>
+        <commons-codec.version>1.6</commons-codec.version>
     </properties>
     <dependencies>
         <dependency>
