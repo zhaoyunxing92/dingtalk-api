@@ -232,9 +232,9 @@ public class DingTalkServiceImpl implements DingTalkService {
      * @return 用户信息
      */
     @Override
-    public ApiResponse<UserDetail> getUserInfoByCode(String corpId, String code, boolean sso) {
+    public ApiResponse<User> getUserInfoByCode(String corpId, String code, boolean sso) {
         UserInfo userInfo = getUserInfo(corpId, code, sso);
-        return ApiResponse.success(getUserDetail(corpId, userInfo.getUserId()));
+        return ApiResponse.success(getUserDetail(corpId, userInfo.getUserId()).conversion());
     }
 
     /**

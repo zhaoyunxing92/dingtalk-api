@@ -26,14 +26,16 @@ public class DingTalkController {
     private final DingTalkService dingTalkService;
 
     /**
-     * 企业内部应用免登
+     * 根据临时授权码获取用户信息
      *
-     * @return config
+     * @param corpId 企业id
+     * @param code   临时授权码
+     * @return 用户信息
      */
     @GetMapping("/login")
-    public ApiResponse<UserDetail> login(@RequestParam(name = "code") String authCode) {
+    public ApiResponse<User> getDingTalkUserInfo(@RequestParam String corpId, @RequestParam String code) {
 
-        return dingTalkService.getUserInfoByCode("", authCode, false);
+        return dingTalkService.getUserInfoByCode(corpId, code, false);
     }
 
     /**
@@ -63,18 +65,5 @@ public class DingTalkController {
         String url = String.join("?", domain, query);
 
         return dingTalkService.generateDingTalkConfig(url, corpId);
-    }
-
-    /**
-     * 根据临时授权码获取用户信息
-     *
-     * @param corpId 企业id
-     * @param code   临时授权码
-     * @return 用户信息
-     */
-    @GetMapping("/user/detail")
-    public ApiResponse<UserDetail> getDingTalkUserInfo(@RequestParam String corpId, @RequestParam String code) {
-
-        return dingTalkService.getUserInfoByCode(corpId, code, false);
     }
 }

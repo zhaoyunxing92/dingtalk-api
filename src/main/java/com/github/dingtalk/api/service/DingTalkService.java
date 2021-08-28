@@ -168,7 +168,7 @@ public interface DingTalkService {
      * @param sso    是否sso
      * @return 用户信息
      */
-    ApiResponse<UserDetail> getUserInfoByCode(String corpId, String code, boolean sso);
+    ApiResponse<User> getUserInfoByCode(String corpId, String code, boolean sso);
 
     /**
      * 获取用户信息

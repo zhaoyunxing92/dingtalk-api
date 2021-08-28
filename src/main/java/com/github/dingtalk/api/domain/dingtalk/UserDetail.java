@@ -1,6 +1,8 @@
 package com.github.dingtalk.api.domain.dingtalk;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.github.dingtalk.api.vo.CorpInfo;
+import com.github.dingtalk.api.vo.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -70,4 +72,17 @@ public class UserDetail extends DingTalkResponse {
      * 用户所在角色列表。
      */
     private List<Role> roles;
+
+    /**
+     * 转换数据
+     *
+     * @return User
+     */
+    public User conversion() {
+        return new User()
+                .setName(getName())
+                .setEmail(getEmail())
+                .setAvatar(getAvatar())
+                .setUserId(getUserId());
+    }
 }
