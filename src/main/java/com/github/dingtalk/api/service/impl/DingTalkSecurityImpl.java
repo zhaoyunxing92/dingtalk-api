@@ -93,10 +93,11 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
             int plainTextLength = bytes2int(networkOrder);
 
             String plainText = new String(Arrays.copyOfRange(bytes, 20, 20 + plainTextLength));
-            String corpId = new String(Arrays.copyOfRange(bytes, 20 + plainTextLength, bytes.length));
+            String appKey = new String(Arrays.copyOfRange(bytes, 20 + plainTextLength, bytes.length));
 
-            if (!dingTalkConfig.getCorpId().equals(corpId)) {
-                log.error("钉钉消息解密异常,企业id不匹配,解密={},配置={}", corpId, dingTalkConfig.getCorpId());
+            // 验证key是否合法
+            if (!dingTalkConfig.getKey().equals(appKey)) {
+                log.error("钉钉消息解密异常,应用key不匹配,解密={},配置={}", appKey, dingTalkConfig.getKey());
                 throw new ServiceException("钉钉消息解密异常,企业id不匹配");
             }
 

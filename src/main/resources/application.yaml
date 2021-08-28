@@ -1,8 +1,8 @@
 dingtalk:
-  id: 1279813775
-  key: dinggcd3ej0tk8qgktoq
+  id: 10435002
+  key: suitegqebx814dt8immqw
   corpId: dinggcd3ej0tk8qgktoq
-  secret: 1kwSXdjyg3Alrh7lWNzYAHTX5Np8eRyqezvobeT9faFeOdyPoNqXWb3sxd3gPTPz
+  secret: AXjjwYhZ7Bwh1e8vlkg7pPQHUACwl8rSJWFma1taYMDLUjmIAtl9d9yAdTBg4K3m
   corpSecret: 39dtrDv5hqnRc9k6Qb49NFypuAqinCRfyS0YiyHKzdEmRKCeoo_ASpwsvjN47mrp
   isv: false
   apis:
@@ -14,4 +14,4 @@ dingtalk:
     - biz.ding.post
     - biz.util.openLink
   token: test
-  aes: 75tbux3hPfGzkL3rU281N2JsFCBfn5oca2rJRI9flO3
+  aes: c3s85esplcaiecruses5rgrxznp6bho87lwbgbrb1zq
