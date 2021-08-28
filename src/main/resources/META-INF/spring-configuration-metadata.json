@@ -55,6 +55,18 @@
       "type": "java.lang.String",
       "description": "在开发者后台的基本信息 > 开发信息（旧版）页面获取微应用管理后台SSOSecret。",
       "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    },
+    {
+      "name": "dingtalk.token",
+      "type": "java.lang.String",
+      "description": "回调URL签名用。应用的签名Token, 登录开发者后台，点击应用管理，进入应用详情可见",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    },
+    {
+      "name": "dingtalk.aes",
+      "type": "java.lang.String",
+      "description": "数据加密密钥。用于回调数据的加密，长度固定为43个字符，从a-z, A-Z, 0-9共62个字符中选取,您可以随机生成",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
     }
   ],
   "hints": []

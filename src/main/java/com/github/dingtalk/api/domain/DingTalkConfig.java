@@ -58,4 +58,14 @@ public class DingTalkConfig {
      * 是否isv调用
      */
     private boolean isv;
+
+    /**
+     * 回调URL签名用。应用的签名Token, 登录开发者后台，点击应用管理，进入应用详情可见
+     */
+    private String token;
+
+    /**
+     * 数据加密密钥。用于回调数据的加密，长度固定为43个字符，从a-z, A-Z, 0-9共62个字符中选取,您可以随机生成
+     */
+    private String aes;
 }

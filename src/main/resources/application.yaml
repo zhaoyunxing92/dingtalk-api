@@ -13,3 +13,5 @@ dingtalk:
     - device.notification.prompt
     - biz.ding.post
     - biz.util.openLink
+  token: test
+  aes: 75tbux3hPfGzkL3rU281N2JsFCBfn5oca2rJRI9flO3

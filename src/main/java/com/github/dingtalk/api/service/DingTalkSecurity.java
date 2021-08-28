@@ -1,5 +1,7 @@
 package com.github.dingtalk.api.service;
 
+import com.github.dingtalk.api.domain.DingTalkEventEncrypt;
+import com.github.dingtalk.api.exception.ServiceException;
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import javax.crypto.Mac;
@@ -120,7 +122,6 @@ public interface DingTalkSecurity {
     default String signature(String ticket, String nonce, long timeStamp, String url) throws Exception {
         try {
             String plain = "jsapi_ticket=" + ticket + "&noncestr=" + nonce + "&timestamp=" + timeStamp + "&url=" + decodeUrl(url);
-            ;
             MessageDigest crypt = MessageDigest.getInstance("SHA-1");
             crypt.reset();
             crypt.update(plain.getBytes(StandardCharsets.UTF_8));
@@ -129,4 +130,78 @@ public interface DingTalkSecurity {
             throw new Exception(e.getMessage());
         }
     }
+
+    /**
+     * int 转byte数组
+     *
+     * @param number 数字
+     * @return byte
+     */
+    default byte[] int2Bytes(int number) {
+        return new byte[]{(byte) (number >> 24 & 255), (byte) (number >> 16 & 255), (byte) (number >> 8 & 255), (byte) (number & 255)};
+    }
+
+    /**
+     * byte 转int
+     *
+     * @param byteArr byte数组
+     * @return int
+     */
+    default int bytes2int(byte[] byteArr) {
+        int count = 0;
+        for (int i = 0; i < 4; ++i) {
+            count <<= 8;
+            count |= byteArr[i] & 255;
+        }
+        return count;
+    }
+
+    /**
+     * 消息解密
+     *
+     * @param signature 签名
+     * @param timestamp 时间戳
+     * @param nonce     随机字符串
+     * @param text      加密消息
+     * @return 解密消息
+     */
+    default String decryptMessage(String signature, String timestamp, String nonce, String text) {
+        String sign = eventSignature(timestamp, nonce, text);
+        if (!signature.equals(sign)) {
+            throw new ServiceException("钉钉事件回调异常,签名不匹配");
+        }
+        return decrypt(text);
+    }
+
+    /**
+     * 获取事件回调签名
+     *
+     * @param timestamp 时间戳
+     * @param nonce     随机字符串
+     * @param encrypt   加密消息体
+     * @return 签名
+     */
+    String eventSignature(String timestamp, String nonce, String encrypt);
+
+    /**
+     * 消息解密
+     *
+     * @param text 加密字符串
+     * @return str
+     */
+    String decrypt(String text);
+
+    /**
+     * @param random    随机字符串
+     * @param plaintext 字符串
+     * @return str
+     */
+    String encrypt(String random, String plaintext);
+
+    /**
+     * 返回success的加密信息表示回调处理成功
+     *
+     * @return success
+     */
+    DingTalkEventEncrypt getSuccessEventEncrypt();
 }

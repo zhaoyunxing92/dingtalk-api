@@ -18,4 +18,9 @@ public class ServiceException extends RuntimeException {
         super(response.getMsg());
         this.response = response;
     }
+
+    public ServiceException(String msg) {
+        super(msg);
+        this.response = ApiResponse.fail(msg);
+    }
 }
