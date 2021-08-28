@@ -1,6 +1,5 @@
 package com.github.dingtalk.api.service;
 
-import com.github.dingtalk.api.domain.DingTalkEventEncrypt;
 import com.github.dingtalk.api.exception.ServiceException;
 import org.apache.tomcat.util.codec.binary.Base64;
 
@@ -203,5 +202,5 @@ public interface DingTalkSecurity {
      *
      * @return success
      */
-    DingTalkEventEncrypt getSuccessEventEncrypt();
+    String getSuccessEventEncrypt();
 }

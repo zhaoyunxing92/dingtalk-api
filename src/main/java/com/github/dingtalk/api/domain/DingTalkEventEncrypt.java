@@ -1,5 +1,6 @@
 package com.github.dingtalk.api.domain;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,4 +37,9 @@ public class DingTalkEventEncrypt {
      * 随机字符串
      */
     private String nonce;
+
+    @Override
+    public String toString() {
+        return JSONObject.toJSONString(this);
+    }
 }

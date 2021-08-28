@@ -153,7 +153,7 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
      * @return success
      */
     @Override
-    public DingTalkEventEncrypt getSuccessEventEncrypt() {
+    public String getSuccessEventEncrypt() {
         String nonce = getRandomStr(16);
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
 
@@ -161,9 +161,9 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
         String signature = eventSignature(timestamp, nonce, encrypt);
 
         return new DingTalkEventEncrypt()
-                .setNonce(getRandomStr(8))
+                .setNonce(nonce)
                 .setEncrypt(encrypt)
                 .setSignature(signature)
-                .setTimeStamp(timestamp);
+                .setTimeStamp(timestamp).toString();
     }
 }

@@ -2,7 +2,6 @@ package com.github.dingtalk.api.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.github.dingtalk.api.domain.DingTalkEventEncrypt;
 import com.github.dingtalk.api.service.DingTalkEventProcessor;
 import com.github.dingtalk.api.service.DingTalkSecurity;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,7 @@ public class DingTalkEventController {
      * @return abc
      */
     @PostMapping
-    public DingTalkEventEncrypt callback(@RequestParam(required = false) String signature,
+    public String callback(@RequestParam(required = false) String signature,
                                          @RequestParam(required = false) String timestamp,
                                          @RequestParam(required = false) String nonce,
                                          @RequestBody(required = false) JSONObject json) {

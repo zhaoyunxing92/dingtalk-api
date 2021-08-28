@@ -43,4 +43,9 @@ public class DingTalkSecurityImplTest extends DingtalkApiApplicationTests {
         Assert.isTrue(signature.equals("d14dfc1d0d98cad2438e664723e8a9d8633b443f"), "签名计算错误");
     }
 
+    @Test
+    public void testDecrypt() {
+        String text = dingTalkSecurity.decrypt("YvkvaGe4hQxd3VxRmEty0dVlnCOAqwf56xwTRHDHoOURqhalbmBJQk5FNcRk42Gl5T0YQXZNwpwWSm1xAFJ5ZA==");
+    }
+
 }
