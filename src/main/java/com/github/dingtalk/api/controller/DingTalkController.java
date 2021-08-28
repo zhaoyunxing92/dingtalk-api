@@ -2,9 +2,11 @@ package com.github.dingtalk.api.controller;
 
 import com.github.dingtalk.api.domain.ApiResponse;
 import com.github.dingtalk.api.domain.DDConfig;
+import com.github.dingtalk.api.domain.dingtalk.AdminUserInfo;
 import com.github.dingtalk.api.domain.dingtalk.UserDetail;
 import com.github.dingtalk.api.domain.dingtalk.UserInfo;
 import com.github.dingtalk.api.service.DingTalkService;
+import com.github.dingtalk.api.vo.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,16 +26,41 @@ public class DingTalkController {
     private final DingTalkService dingTalkService;
 
     /**
+     * 企业内部应用免登
+     *
+     * @return config
+     */
+    @GetMapping("/login")
+    public ApiResponse<UserDetail> login(@RequestParam(name = "code") String authCode) {
+
+        return dingTalkService.getUserInfoByCode("", authCode, false);
+    }
+
+    /**
+     * 应用管理后台免登
+     *
+     * @param authCode 授权码
+     * @return 用户信息
+     */
+    @GetMapping("/sso/login")
+    public ApiResponse<User> ssoLogin(@RequestParam(name = "code") String authCode) {
+        return dingTalkService.getAdminUserInfo(authCode);
+    }
+
+    /**
      * 获取dd config
      *
      * @param corpId 企业id
      * @return config
      */
-    @GetMapping("/dd/config/{corpId}")
+    @GetMapping("/dd/config")
     public ApiResponse<DDConfig> getDingTalkConfig(HttpServletRequest request,
-                                                   @PathVariable(name = "corpId") String corpId) {
+                                                   @RequestParam(name = "corpId") String corpId) {
 
-        String url = request.getRequestURL().toString();
+        String domain = request.getRequestURL().toString();
+        String query = request.getQueryString();
+
+        String url = String.join("?", domain, query);
 
         return dingTalkService.generateDingTalkConfig(url, corpId);
     }
@@ -48,6 +75,6 @@ public class DingTalkController {
     @GetMapping("/user/detail")
     public ApiResponse<UserDetail> getDingTalkUserInfo(@RequestParam String corpId, @RequestParam String code) {
 
-        return dingTalkService.getDingTalkUserInfoByCode(corpId, code);
+        return dingTalkService.getUserInfoByCode(corpId, code, false);
     }
 }

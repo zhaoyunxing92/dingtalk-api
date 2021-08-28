@@ -2,14 +2,13 @@ package com.github.dingtalk.api.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.github.dingtalk.api.domain.*;
-import com.github.dingtalk.api.domain.dingtalk.AccessToken;
-import com.github.dingtalk.api.domain.dingtalk.Ticket;
-import com.github.dingtalk.api.domain.dingtalk.UserDetail;
+import com.github.dingtalk.api.domain.dingtalk.*;
 import com.github.dingtalk.api.domain.dingtalk.UserInfo;
 import com.github.dingtalk.api.exception.ServiceException;
 import com.github.dingtalk.api.request.CorpTokenRequest;
 import com.github.dingtalk.api.service.DingTalkSecurity;
 import com.github.dingtalk.api.service.DingTalkService;
+import com.github.dingtalk.api.vo.User;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -46,8 +45,8 @@ public class DingTalkServiceImpl implements DingTalkService {
      *
      * @return token
      */
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public String getToken() {
 
         HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getToken)).newBuilder();
@@ -59,6 +58,21 @@ public class DingTalkServiceImpl implements DingTalkService {
                 .get()
                 .build();
 
+        return execute(request, AccessToken.class).getToken();
+    }
+
+    @Override
+    @SneakyThrows
+    public String getSSOToken(String corpId) {
+        HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getSSOToken)).newBuilder();
+        url.addEncodedQueryParameter("corpid", dingTalkConfig.getCorpId());
+        url.addEncodedQueryParameter("corpsecret", dingTalkConfig.getCorpSecret());
+
+        Request request = new Request.Builder()
+                .cacheControl(new CacheControl.Builder().maxAge(7000, TimeUnit.SECONDS).build())
+                .url(url.build())
+                .get()
+                .build();
         return execute(request, AccessToken.class).getToken();
     }
 
@@ -113,7 +127,7 @@ public class DingTalkServiceImpl implements DingTalkService {
     @SneakyThrows
     public String getTicketToken(String corpId) {
 
-        String token = getAccessToken(corpId, dingTalkConfig.isIsv());
+        String token = getAccessToken(corpId, dingTalkConfig.isIsv(), false);
 
         HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getTicketToken)).newBuilder();
         url.addEncodedQueryParameter("access_token", token);
@@ -139,7 +153,7 @@ public class DingTalkServiceImpl implements DingTalkService {
         try {
 
             String ticket = getTicketToken(corpId);
-            String nonce = dingTalkSecurity.getRandomStr(8);
+            String nonce = dingTalkSecurity.getRandomStr(10);
             long timestamp = Instant.now().getEpochSecond();
 
             String signature = dingTalkSecurity.signature(ticket, nonce, timestamp, url);
@@ -164,13 +178,14 @@ public class DingTalkServiceImpl implements DingTalkService {
      *
      * @param corpId 企业id
      * @param code   临时授权码
+     * @param sso    私服sso
      * @return 用户信息
      */
     @Override
     @SneakyThrows
-    public UserInfo getUserInfo(String corpId, String code) {
+    public UserInfo getUserInfo(String corpId, String code, boolean sso) {
 
-        String token = getAccessToken(corpId, dingTalkConfig.isIsv());
+        String token = getAccessToken(corpId, dingTalkConfig.isIsv(), sso);
         HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getUserInfo)).newBuilder();
         url.addEncodedQueryParameter("access_token", token);
         url.addEncodedQueryParameter("code", code);
@@ -194,7 +209,7 @@ public class DingTalkServiceImpl implements DingTalkService {
     @SneakyThrows
     public UserDetail getUserDetail(String corpId, String userId) {
 
-        String token = getAccessToken(corpId, dingTalkConfig.isIsv());
+        String token = getAccessToken(corpId, dingTalkConfig.isIsv(), false);
 
         HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getUserDetail)).newBuilder();
         url.addEncodedQueryParameter("access_token", token);
@@ -213,11 +228,36 @@ public class DingTalkServiceImpl implements DingTalkService {
      *
      * @param corpId 企业id
      * @param code   临时授权码
+     * @param sso    是否sso
      * @return 用户信息
      */
     @Override
-    public ApiResponse<UserDetail> getDingTalkUserInfoByCode(String corpId, String code) {
-        UserInfo userInfo = getUserInfo(corpId, code);
+    public ApiResponse<UserDetail> getUserInfoByCode(String corpId, String code, boolean sso) {
+        UserInfo userInfo = getUserInfo(corpId, code, sso);
         return ApiResponse.success(getUserDetail(corpId, userInfo.getUserId()));
+    }
+
+    /**
+     * 获取应用管理身份信息
+     *
+     * @param code 临时授权码
+     * @return userInfo
+     */
+    @Override
+    @SneakyThrows
+    public ApiResponse<User> getAdminUserInfo(String code) {
+
+        String token = getAccessToken("", dingTalkConfig.isIsv(), true);
+
+        HttpUrl.Builder url = Objects.requireNonNull(HttpUrl.parse(getSSOUserInfo)).newBuilder();
+        url.addEncodedQueryParameter("access_token", token);
+        url.addEncodedQueryParameter("code", code);
+
+        Request request = new Request.Builder()
+                .url(url.build())
+                .get()
+                .build();
+
+        return ApiResponse.success(execute(request, AdminUserInfo.class).conversion());
     }
 }

@@ -53,6 +53,11 @@ public class UserDetail extends DingTalkResponse {
     private String stateCode;
 
     /**
+     * 邮件
+     */
+    private String email;
+
+    /**
      * 是否实名认证：
      * <p>
      * true：是

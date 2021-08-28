@@ -70,6 +70,9 @@ public interface DingTalkSecurity {
             urlBuffer.append("//");
             urlBuffer.append(uri.getAuthority());
         }
+        if (uri.getPort() <= -1) {
+            urlBuffer.append(":80");
+        }
         if (uri.getPath() != null) {
             urlBuffer.append(uri.getPath());
         }
@@ -116,12 +119,12 @@ public interface DingTalkSecurity {
      */
     default String signature(String ticket, String nonce, long timeStamp, String url) throws Exception {
         try {
-            String plain = "jsapi_ticket=" + ticket + "&noncestr=" + nonce + "&timestamp=" + timeStamp
-                    + "&url=" + decodeUrl(url);
-            MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-            sha1.reset();
-            sha1.update(plain.getBytes(StandardCharsets.UTF_8));
-            return byteToHex(sha1.digest());
+            String plain = "jsapi_ticket=" + ticket + "&noncestr=" + nonce + "&timestamp=" + timeStamp + "&url=" + decodeUrl(url);
+            ;
+            MessageDigest crypt = MessageDigest.getInstance("SHA-1");
+            crypt.reset();
+            crypt.update(plain.getBytes(StandardCharsets.UTF_8));
+            return byteToHex(crypt.digest());
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

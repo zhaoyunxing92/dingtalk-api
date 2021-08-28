@@ -2,10 +2,12 @@ package com.github.dingtalk.api.service;
 
 import com.alibaba.fastjson.JSON;
 import com.github.dingtalk.api.domain.*;
+import com.github.dingtalk.api.domain.dingtalk.AdminUserInfo;
 import com.github.dingtalk.api.domain.dingtalk.DingTalkResponse;
 import com.github.dingtalk.api.domain.dingtalk.UserDetail;
 import com.github.dingtalk.api.domain.dingtalk.UserInfo;
 import com.github.dingtalk.api.exception.ServiceException;
+import com.github.dingtalk.api.vo.User;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -32,6 +34,11 @@ public interface DingTalkService {
     String getToken = api + "/gettoken";
 
     /**
+     * 获取微应用后台免登的access_token
+     */
+    String getSSOToken = api + "/sso/gettoken";
+
+    /**
      * corp token
      */
     String getCorpToken = api + "/service/get_corp_token";
@@ -47,6 +54,11 @@ public interface DingTalkService {
     String getUserInfo = api + "/user/getuserinfo";
 
     /**
+     * SSO 用户信息
+     */
+    String getSSOUserInfo = api + "/sso/getuserinfo";
+
+    /**
      * 用户详情
      */
     String getUserDetail = api + "/user/get";
@@ -58,8 +70,8 @@ public interface DingTalkService {
             .readTimeout(3, TimeUnit.SECONDS)
             .writeTimeout(3, TimeUnit.SECONDS)
             .connectTimeout(3, TimeUnit.SECONDS)
-            .cache(new Cache(new File(System.getProperty("user.dir"), ".cache"),
-                    10 * 1024 * 1024))
+            //            .cache(new Cache(new File(System.getProperty("user.dir"), ".cache"),
+            //                    10 * 1024 * 1024))
             .build();
 
     /**
@@ -67,11 +79,15 @@ public interface DingTalkService {
      *
      * @param corpId 企业id
      * @param isv    是否isv
+     * @param sso    是否sso
      * @return token
      */
-    default String getAccessToken(String corpId, boolean isv) {
+    default String getAccessToken(String corpId, boolean isv, boolean sso) {
         if (isv) {
             return getCorpToken(corpId);
+        }
+        if (sso) {
+            return getSSOToken(corpId);
         }
         return getToken();
     }
@@ -108,6 +124,15 @@ public interface DingTalkService {
     String getToken();
 
     /**
+     * <a href="https://developers.dingtalk.com/document/app/obtain-the-ssotoken-for-micro-application-background-logon-free">获取微应用后台免登的access_token</a>
+     *
+     * @param corpId 企业id
+     * @return token
+     */
+    String getSSOToken(String corpId);
+
+
+    /**
      * 获取第三方应用授权企业的access_token
      *
      * <a href=https://developers.dingtalk.com/document/app/obtains-the-enterprise-authorized-credential>获取企业内部应用的access_token</a>
@@ -140,18 +165,20 @@ public interface DingTalkService {
      *
      * @param corpId 企业id
      * @param code   临时授权码
+     * @param sso    是否sso
      * @return 用户信息
      */
-    ApiResponse<UserDetail> getDingTalkUserInfoByCode(String corpId, String code);
+    ApiResponse<UserDetail> getUserInfoByCode(String corpId, String code, boolean sso);
 
     /**
      * 获取用户信息
      *
      * @param corpId 企业id
      * @param code   临时授权码
+     * @param sso    是否sso
      * @return 用户信息
      */
-    UserInfo getUserInfo(String corpId, String code);
+    UserInfo getUserInfo(String corpId, String code, boolean sso);
 
     /**
      * 获取用户详情
@@ -161,4 +188,12 @@ public interface DingTalkService {
      * @return 用户详情
      */
     UserDetail getUserDetail(String corpId, String userId);
+
+    /**
+     * 获取应用管理身份信息
+     *
+     * @param code 临时授权码
+     * @return userInfo
+     */
+    ApiResponse<User> getAdminUserInfo(String code);
 }

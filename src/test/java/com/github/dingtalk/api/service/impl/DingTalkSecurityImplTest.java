@@ -29,4 +29,18 @@ public class DingTalkSecurityImplTest extends DingtalkApiApplicationTests {
 
         Assert.isTrue(signature.equals("auGsFduirwTx3fYqswR8SCuaKbHpHjJzUB%2FcIAWHGuw%3D"), "签名计算错误");
     }
+
+    @Test
+    public void testJsApiSignature() throws Exception {
+        String url = "http://test4.weixin.wtoip.com:80/wtoip/dingding/dzmp";
+        String nonce = "abcde12345";
+        long timeStamp = 1463125744L;
+
+        String ticket = "gUsHOoPPzLVZKVkClnESg88m7qMV4c0Ys9VGsMigqzZU7gA8PeoNzHODmYPZ85TYuoZryXuqEUFlXLN1OPEixm";
+
+        String signature = dingTalkSecurity.signature(ticket, nonce, timeStamp, url);
+
+        Assert.isTrue(signature.equals("d14dfc1d0d98cad2438e664723e8a9d8633b443f"), "签名计算错误");
+    }
+
 }

@@ -1,7 +1,9 @@
 dingtalk:
   id: 1279813775
   key: dinggcd3ej0tk8qgktoq
+  corpId: dingc7c5220402493357f2c783f7214b6d69
   secret: 1kwSXdjyg3Alrh7lWNzYAHTX5Np8eRyqezvobeT9faFeOdyPoNqXWb3sxd3gPTPz
+  corpSecret: 39dtrDv5hqnRc9k6Qb49NFypuAqinCRfyS0YiyHKzdEmRKCeoo_ASpwsvjN47mrp
   isv: false
   apis:
     - runtime.info

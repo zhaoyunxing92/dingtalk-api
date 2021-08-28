@@ -25,6 +25,16 @@ public class DingTalkConfig {
     private Long id;
 
     /**
+     * 企业的corpid。ISV开发的应用后台免登用的access_token，需使用ISV自己的corpId和SSOsecret来换取，不是管理员所在的企业的。
+     */
+    private String corpId;
+
+    /**
+     * 在开发者后台的基本信息 > 开发信息（旧版）页面获取微应用管理后台SSOSecret。
+     */
+    private String corpSecret;
+
+    /**
      * 小程序key
      */
     private String key;

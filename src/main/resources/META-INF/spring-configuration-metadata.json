@@ -43,6 +43,18 @@
       "type": "java.lang.String",
       "description": "钉钉推送的suiteTicket。",
       "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    },
+    {
+      "name": "dingtalk.corpId",
+      "type": "java.lang.String",
+      "description": "企业的corpid。ISV开发的应用后台免登用的access_token，需使用ISV自己的corpId和SSOsecret来换取，不是管理员所在的企业的。",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
+    },
+    {
+      "name": "dingtalk.corpSecret",
+      "type": "java.lang.String",
+      "description": "在开发者后台的基本信息 > 开发信息（旧版）页面获取微应用管理后台SSOSecret。",
+      "sourceType": "com.github.dingtalk.api.domain.DingTalkConfig"
     }
   ],
   "hints": []
