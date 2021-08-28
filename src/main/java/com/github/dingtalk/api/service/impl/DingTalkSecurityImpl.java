@@ -46,7 +46,8 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
     public String eventSignature(String timestamp, String nonce, String encrypt) {
 
         try {
-            String str = Stream.of(dingTalkConfig.getToken(), timestamp, nonce, encrypt).sorted().reduce(String::concat).toString();
+            String str = Stream.of(dingTalkConfig.getToken(), timestamp, nonce, encrypt).sorted()
+                    .reduce(String::concat).get();
 
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             md.update(str.getBytes());
@@ -58,7 +59,6 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
                 if (shaHex.length() < 2) {
                     hexStr.append(0);
                 }
-
                 hexStr.append(shaHex);
             }
             return hexStr.toString();
@@ -79,7 +79,8 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
         try {
 
             Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-            byte[] aes = dingTalkConfig.getAes().getBytes(StandardCharsets.UTF_8);
+            byte[] aes = Base64.decodeBase64(dingTalkConfig.getAes() + "=");
+
             SecretKeySpec keySpec = new SecretKeySpec(aes, "AES");
             IvParameterSpec iv = new IvParameterSpec(Arrays.copyOfRange(aes, 0, 16));
             cipher.init(2, keySpec, iv);
@@ -134,7 +135,7 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
 
             Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
-            byte[] aes = dingTalkConfig.getAes().getBytes(StandardCharsets.UTF_8);
+            byte[] aes = Base64.decodeBase64(dingTalkConfig.getAes() + "=");
 
             SecretKeySpec keySpec = new SecretKeySpec(aes, "AES");
             IvParameterSpec iv = new IvParameterSpec(aes, 0, 16);
