@@ -7,7 +7,7 @@ import com.github.dingtalk.api.service.DingTalkSecurity;
 import com.github.dingtalk.api.service.PKCS7Padding;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -154,14 +154,14 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
      */
     @Override
     public DingTalkEventEncrypt getSuccessEventEncrypt() {
-        String nonce = getRandomStr(8);
+        String nonce = getRandomStr(16);
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
 
         String encrypt = encrypt(nonce, "success");
         String signature = eventSignature(timestamp, nonce, encrypt);
 
         return new DingTalkEventEncrypt()
-                .setNonce(nonce)
+                .setNonce(getRandomStr(8))
                 .setEncrypt(encrypt)
                 .setSignature(signature)
                 .setTimeStamp(timestamp);
