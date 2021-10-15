@@ -202,5 +202,5 @@ public interface DingTalkSecurity {
      *
      * @return success
      */
-    String getSuccessEventEncrypt();
+    String getSuccessEventEncrypt(String timestamp, String nonce);
 }

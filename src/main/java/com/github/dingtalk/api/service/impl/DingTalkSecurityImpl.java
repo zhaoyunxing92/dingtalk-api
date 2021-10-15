@@ -35,6 +35,7 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
     private final DingTalkConfig dingTalkConfig;
 
     private static final Base64 base64 = new Base64();
+
     /**
      * 获取事件回调签名
      *
@@ -56,7 +57,7 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
             StringBuilder hexStr = new StringBuilder();
             String shaHex = "";
             for (byte b : digest) {
-                shaHex = Integer.toHexString(b & 255);
+                shaHex = Integer.toHexString(b & 0xFF);
                 if (shaHex.length() < 2) {
                     hexStr.append(0);
                 }
@@ -71,7 +72,7 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
 
     /**
      * 消息解密 https://developers.dingtalk.com/document/app/configure-event-subcription
-     *
+     * <p>
      * toke:123456
      * ase: 1234567890123456789012345678901234567890123
      * appkey: dingsnotzck6pm5veliw
@@ -79,7 +80,8 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
      * timestamp: 1614767836
      * nonce: A7Co0cJLMzIDtMMI
      * encrypt: YvkvaGe4hQxd3VxRmEty0dVlnCOAqwf56xwTRHDHoOURqhalbmBJQk5FNcRk42Gl5T0YQXZNwpwWSm1xAFJ5ZA==
-     *  解密出 success
+     * 解密出 success
+     *
      * @param text 加密字符串
      * @return str
      */
@@ -134,11 +136,10 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
 
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             byteStream.write(randomBytes);
-            byteStream.write(plainTextBytes);
             byteStream.write(lengthByte);
+            byteStream.write(plainTextBytes);
             byteStream.write(corpIdBytes);
             byte[] padBytes = PKCS7Padding.getPaddingBytes(byteStream.size());
-
             byteStream.write(padBytes);
             byte[] unencrypted = byteStream.toByteArray();
             byteStream.close();
@@ -163,11 +164,9 @@ public class DingTalkSecurityImpl implements DingTalkSecurity {
      * @return success
      */
     @Override
-    public String getSuccessEventEncrypt() {
-        String nonce = getRandomStr(16);
-        String timestamp = String.valueOf(Instant.now().getEpochSecond());
+    public String getSuccessEventEncrypt(String timestamp, String nonce) {
 
-        String encrypt = encrypt(nonce, "success");
+        String encrypt = encrypt(getRandomStr(16), "success");
         String signature = eventSignature(timestamp, nonce, encrypt);
 
         return new DingTalkEventEncrypt()
